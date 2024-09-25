@@ -1,3 +1,4 @@
+// jed filip m. sayat
 #include <iostream>
 using namespace std;
 
@@ -38,10 +39,7 @@ public:
         cout << "\nCurrent balance: " << accountBalance << endl;
     }
 
-    void withdraw(double amount) 
-    {
-        cout << "\nWithdraw method must be implemented in derived classes." << endl;
-    }
+    virtual void withdraw(double amount) = 0;
 
     double getBalance() const 
     {
@@ -52,6 +50,7 @@ public:
     {
         accountBalance = newBalance;
     }
+
 };
 
 class SavingsAccount : public BankAccount 
@@ -69,7 +68,7 @@ public:
         }
     }
 
-    void withdraw(double amount) 
+    void withdraw(double amount) override 
     {
         if (amount <= 0) 
         {
@@ -92,7 +91,7 @@ class CurrentAccount : public BankAccount
 public:
     CurrentAccount(double initialBalance) : BankAccount(initialBalance) {}
 
-    void withdraw(double amount) 
+    void withdraw(double amount) override 
     {
         if (amount <= 0) 
         {
@@ -167,89 +166,59 @@ int main()
 
         if (isValidInput()) 
         {
-            if (mainChoice == 1 || mainChoice == 2) 
+            BankAccount* account = nullptr;
+            if (mainChoice == 1) 
             {
-                if (mainChoice == 1) 
-                {
-                    while (subChoice != 4) 
-                    {
-                        showSubMenu();
-                        cin >> subChoice;
-                        if (isValidInput()) 
-                        {
-                            if (subChoice == 1) 
-                            {
-                                cout << "\nEnter amount to deposit: ";
-                                double amount = getValidAmount();
-                                if (amount > 0) savingsAccount.deposit(amount);
-                            } 
-                            else if (subChoice == 2) 
-                            {
-                                cout << "\nEnter amount to withdraw: ";
-                                double amount = getValidAmount();
-                                if (amount > 0) savingsAccount.withdraw(amount);
-                            } 
-                            else if (subChoice == 3) 
-                            {
-                                savingsAccount.checkBalance();
-                            } 
-                            else if (subChoice == 4) 
-                            {
-                                cout << "\nExiting to Main Menu...\n";
-                            } 
-                            else 
-                            {
-                                cout << "\nInvalid choice! Please try again.\n";
-                            }
-                        }
-                    }
-                } 
-                else if (mainChoice == 2) 
-                {
-                    while (subChoice != 4) 
-                    {
-                        showSubMenu();
-                        cin >> subChoice;
-                        if (isValidInput()) 
-                        {
-                            if (subChoice == 1) 
-                            {
-                                cout << "\nEnter amount to deposit: ";
-                                double amount = getValidAmount();
-                                if (amount > 0) currentAccount.deposit(amount);
-                            } 
-                            else if (subChoice == 2) 
-                            {
-                                cout << "\nEnter amount to withdraw: ";
-                                double amount = getValidAmount();
-                                if (amount > 0) currentAccount.withdraw(amount);
-                            } 
-                            else if (subChoice == 3) 
-                            {
-                                currentAccount.checkBalance();
-                            } 
-                            else if (subChoice == 4) 
-                            {
-                                cout << "\nExiting to Main Menu...\n";
-                            } 
-                            else 
-                            {
-                                cout << "\nInvalid choice! Please try again.\n";
-                            }
-                        }
-                    }
-                }
-                
-                subChoice = 0;
+                account = &savingsAccount;
+            } 
+            else if (mainChoice == 2) 
+            {
+                account = &currentAccount;
             } 
             else if (mainChoice == 3) 
             {
                 cout << "\nExiting the system. Goodbye!\n";
+                break;
             } 
             else 
             {
                 cout << "\nInvalid choice! Please try again.\n";
+                continue;
             }
+
+            while (subChoice != 4) 
+            {
+                showSubMenu();
+                cin >> subChoice;
+                if (isValidInput()) 
+                {
+                    if (subChoice == 1) 
+                    {
+                        cout << "\nEnter amount to deposit: ";
+                        double amount = getValidAmount();
+                        if (amount > 0) account->deposit(amount);
+                    } 
+                    else if (subChoice == 2) 
+                    {
+                        cout << "\nEnter amount to withdraw: ";
+                        double amount = getValidAmount();
+                        if (amount > 0) account->withdraw(amount);
+                    } 
+                    else if (subChoice == 3) 
+                    {
+                        account->checkBalance();
+                    } 
+                    else if (subChoice == 4) 
+                    {
+                        cout << "\nExiting to Main Menu...\n";
+                    } 
+                    else 
+                    {
+                        cout << "\nInvalid choice! Please try again.\n";
+                    }
+                }
+            }
+            subChoice = 0;
         }
     }
 
